@@ -185,7 +185,7 @@ fn search_articles<'a>(articles: &'a [Article], query: &str) -> Vec<&'a Article>
         .filter(|article| {
             !article.published && (
                 article.title.to_lowercase().contains(&query_lower) ||
-                article.body_markdown.as_ref().map_or(false, |body| {
+                article.body_markdown.as_ref().is_some_and(|body| {
                     body.to_lowercase().contains(&query_lower)
                 }) ||
                 article.tags.as_ref().unwrap_or(&vec![]).iter().any(|tag| tag.to_lowercase().contains(&query_lower))
@@ -234,15 +234,13 @@ async fn main() -> Result<()> {
 
     // Get articles (from cache or API)
     let prev_cache_count = load_articles_cache().map(|a| a.len()).unwrap_or(0);
-    if cli.refresh {
-        if prev_cache_count > 0 {
-            let est_pages = (prev_cache_count as f64 / 1000.0).ceil() as u64;
-            let est_time = est_pages;
-            println!(
-                "Current cache: {} articles. Estimated time to refresh: about {} seconds ({} pages).",
-                prev_cache_count, est_time, est_pages
-            );
-        }
+    if cli.refresh && prev_cache_count > 0 {
+        let est_pages = (prev_cache_count as f64 / 1000.0).ceil() as u64;
+        let est_time = est_pages;
+        println!(
+            "Current cache: {} articles. Estimated time to refresh: about {} seconds ({} pages).",
+            prev_cache_count, est_time, est_pages
+        );
     }
     let articles = if cli.refresh || load_articles_cache().unwrap_or_default().is_empty() {
         println!("{}", "Fetching articles from dev.to...".blue());
