@@ -1,6 +1,6 @@
 use clap::Parser;
-use anyhow::{Result, Context};
 use colored::*;
+use anyhow::{Result, Context};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
@@ -28,44 +28,44 @@ struct Cli {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct Article {
-    id: u64,
-    title: String,
-    description: Option<String>,
-    body_markdown: Option<String>,
-    url: String,
-    canonical_url: Option<String>,
-    url_with_preview: Option<String>,
-    published: bool,
-    created_at: Option<String>,
-    updated_at: Option<String>,
-    tags: Option<Vec<String>>,
-    slug: String,
-    user: ArticleUser,
+pub struct Article {
+    pub id: u64,
+    pub title: String,
+    pub description: Option<String>,
+    pub body_markdown: Option<String>,
+    pub url: String,
+    pub canonical_url: Option<String>,
+    pub url_with_preview: Option<String>,
+    pub published: bool,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+    pub tags: Option<Vec<String>>,
+    pub slug: String,
+    pub user: ArticleUser,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct ArticleUser {
-    username: String,
+pub struct ArticleUser {
+    pub username: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct Config {
-    api_key: String,
+pub struct Config {
+    pub api_key: String,
 }
 
-struct DevToClient {
+pub struct DevToClient {
     client: reqwest::Client,
-    api_key: String,
+    pub api_key: String,
 }
 
 impl DevToClient {
-    fn new(api_key: String) -> Self {
+    pub fn new(api_key: String) -> Self {
         let client = reqwest::Client::new();
         Self { client, api_key }
     }
 
-    async fn get_my_articles(&self) -> Result<Vec<Article>> {
+    pub async fn get_my_articles(&self) -> Result<Vec<Article>> {
         let mut all_articles = Vec::new();
         let mut page = 1;
         let per_page = 1000;
@@ -100,7 +100,7 @@ impl DevToClient {
             all_articles.extend(articles);
             println!("Page {}: Fetched {} articles so far...", page, all_articles.len());
             page += 1;
-            tokio::time::sleep(std::time::Duration::from_secs(1)).await; // rate limit対策
+            tokio::time::sleep(std::time::Duration::from_secs(1)).await; // rate limit mitigation
         }
 
         println!("Done! Total {} articles fetched.", all_articles.len());
@@ -108,78 +108,67 @@ impl DevToClient {
     }
 }
 
-fn get_config_dir() -> Result<PathBuf> {
+pub fn get_config_dir() -> Result<PathBuf> {
     let home_dir = dirs::home_dir()
         .ok_or_else(|| anyhow::anyhow!("Could not find home directory"))?;
     let config_dir = home_dir.join(".dtdrafts");
     Ok(config_dir)
 }
 
-fn get_config_file() -> Result<PathBuf> {
+pub fn get_config_file() -> Result<PathBuf> {
     let mut config_file = get_config_dir()?;
     config_file.push("config.json");
     Ok(config_file)
 }
 
-fn get_cache_file() -> Result<PathBuf> {
+pub fn get_cache_file() -> Result<PathBuf> {
     let mut cache_file = get_config_dir()?;
     cache_file.push("articles_cache.json");
     Ok(cache_file)
 }
 
-fn save_config(config: &Config) -> Result<()> {
+pub fn save_config(config: &Config) -> Result<()> {
     let config_dir = get_config_dir()?;
     fs::create_dir_all(&config_dir)?;
-    
     let config_file = get_config_file()?;
     let config_json = serde_json::to_string_pretty(config)?;
     fs::write(config_file, config_json)?;
-    
     Ok(())
 }
 
-fn load_config() -> Result<Config> {
+pub fn load_config() -> Result<Config> {
     let config_file = get_config_file()?;
-    
     if !config_file.exists() {
         return Err(anyhow::anyhow!(
             "No API key found. Please set it first with: dtdrafts --set-api-key YOUR_API_KEY"
         ));
     }
-
     let config_content = fs::read_to_string(config_file)?;
     let config: Config = serde_json::from_str(&config_content)?;
-    
     Ok(config)
 }
 
-fn save_articles_cache(articles: &[Article]) -> Result<()> {
+pub fn save_articles_cache(articles: &[Article]) -> Result<()> {
     let config_dir = get_config_dir()?;
     fs::create_dir_all(&config_dir)?;
-    
     let cache_file = get_cache_file()?;
     let cache_json = serde_json::to_string_pretty(articles)?;
     fs::write(cache_file, cache_json)?;
-    
     Ok(())
 }
 
-fn load_articles_cache() -> Result<Vec<Article>> {
+pub fn load_articles_cache() -> Result<Vec<Article>> {
     let cache_file = get_cache_file()?;
-    
     if !cache_file.exists() {
         return Ok(Vec::new());
     }
-
     let cache_content = fs::read_to_string(cache_file)?;
     let articles: Vec<Article> = serde_json::from_str(&cache_content)?;
-    
     Ok(articles)
 }
 
-fn search_articles<'a>(articles: &'a [Article], query: &str) -> Vec<&'a Article> {
+pub fn search_articles<'a>(articles: &'a [Article], query: &str) -> Vec<&'a Article> {
     let query_lower = query.to_lowercase();
-    
     articles
         .iter()
         .filter(|article| {
@@ -194,24 +183,22 @@ fn search_articles<'a>(articles: &'a [Article], query: &str) -> Vec<&'a Article>
         .collect()
 }
 
-fn get_draft_articles(articles: &[Article]) -> Vec<&Article> {
+pub fn get_draft_articles(articles: &[Article]) -> Vec<&Article> {
     articles
         .iter()
         .filter(|article| !article.published)
         .collect()
 }
 
-fn display_articles(articles: &[&Article]) {
+pub fn display_articles(articles: &[&Article]) {
     if articles.is_empty() {
         println!("{}", "No draft articles found.".yellow());
         return;
     }
-
     println!("{} draft article(s) found:\n", articles.len().to_string().green().bold());
-
     for (i, article) in articles.iter().enumerate() {
         println!("{}. {}", i + 1, article.title.cyan().bold());
-        let edit_url = format!("https://dev.to/{}/{}/edit", article.user.username, article.slug);
+        let edit_url = format!("@https://dev.to/{}/{}/edit", article.user.username, article.slug);
         println!("{}", edit_url.blue().underline());
         println!();
     }
@@ -276,4 +263,101 @@ async fn main() -> Result<()> {
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sample_articles() -> Vec<Article> {
+        vec![
+            Article {
+                id: 1,
+                title: "Rust Tips".to_string(),
+                description: Some("Learn Rust".to_string()),
+                body_markdown: Some("Rust is great for CLI tools.".to_string()),
+                url: "https://dev.to/user/rust-tips".to_string(),
+                canonical_url: None,
+                url_with_preview: None,
+                published: false,
+                created_at: None,
+                updated_at: None,
+                tags: Some(vec!["rust".to_string(), "cli".to_string()]),
+                slug: "rust-tips".to_string(),
+                user: ArticleUser { username: "user".to_string() },
+            },
+            Article {
+                id: 2,
+                title: "Kotlin Guide".to_string(),
+                description: Some("Kotlin basics".to_string()),
+                body_markdown: Some("Kotlin is a modern language.".to_string()),
+                url: "https://dev.to/user/kotlin-guide".to_string(),
+                canonical_url: None,
+                url_with_preview: None,
+                published: true,
+                created_at: None,
+                updated_at: None,
+                tags: Some(vec!["kotlin".to_string(), "android".to_string()]),
+                slug: "kotlin-guide".to_string(),
+                user: ArticleUser { username: "user".to_string() },
+            },
+            Article {
+                id: 3,
+                title: "CLI Tricks".to_string(),
+                description: Some("Tips for CLI".to_string()),
+                body_markdown: Some("Use Rust or Python for CLI.".to_string()),
+                url: "https://dev.to/user/cli-tricks".to_string(),
+                canonical_url: None,
+                url_with_preview: None,
+                published: false,
+                created_at: None,
+                updated_at: None,
+                tags: Some(vec!["cli".to_string(), "tools".to_string()]),
+                slug: "cli-tricks".to_string(),
+                user: ArticleUser { username: "user".to_string() },
+            },
+        ]
+    }
+
+    #[test]
+    fn test_search_by_title() {
+        let articles = sample_articles();
+        let found = search_articles(&articles, "rust");
+        assert_eq!(found.len(), 2);
+        let titles: Vec<_> = found.iter().map(|a| a.title.as_str()).collect();
+        assert!(titles.contains(&"Rust Tips"));
+        assert!(titles.contains(&"CLI Tricks"));
+    }
+
+    #[test]
+    fn test_search_by_body_markdown() {
+        let articles = sample_articles();
+        let found = search_articles(&articles, "modern language");
+        // Only published article has this, so should not be found
+        assert_eq!(found.len(), 0);
+        let found2 = search_articles(&articles, "python");
+        assert_eq!(found2.len(), 1);
+        assert_eq!(found2[0].title, "CLI Tricks");
+    }
+
+    #[test]
+    fn test_search_by_tag() {
+        let articles = sample_articles();
+        let found = search_articles(&articles, "cli");
+        // Two unpublished articles have 'cli' tag
+        assert_eq!(found.len(), 2);
+        let titles: Vec<_> = found.iter().map(|a| a.title.as_str()).collect();
+        assert!(titles.contains(&"Rust Tips"));
+        assert!(titles.contains(&"CLI Tricks"));
+    }
+
+    #[test]
+    fn test_get_draft_articles() {
+        let articles = sample_articles();
+        let drafts = get_draft_articles(&articles);
+        assert_eq!(drafts.len(), 2);
+        let titles: Vec<_> = drafts.iter().map(|a| a.title.as_str()).collect();
+        assert!(titles.contains(&"Rust Tips"));
+        assert!(titles.contains(&"CLI Tricks"));
+    }
 }
