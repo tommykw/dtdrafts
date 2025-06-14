@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build binary
+        run: cargo build --release
+      - name: Package binary
+        run: |
+          mkdir dist
+          cp target/release/dtdrafts dist/
+          cd dist
+          tar -czvf dtdrafts-macos.tar.gz dtdrafts
+      - name: Calculate SHA256
+        id: sha
+        run: echo "sha256=$(shasum -a 256 dist/dtdrafts-macos.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/dtdrafts-macos.tar.gz
+      - name: Update Homebrew Formula
+        uses: mislav/bump-homebrew-formula-action@v2
+        with:
+          formula-name: dtdrafts
+          homebrew-tap: tommykw/homebrew-dtdrafts
+          download-url: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/dtdrafts-macos.tar.gz
+          sha256: ${{ steps.sha.outputs.sha256 }}
+        env:
+          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }} 
