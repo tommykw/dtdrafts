@@ -46,8 +46,7 @@ async fn main() -> Result<()> {
         let est_pages = (prev_cache_count as f64 / 1000.0).ceil() as u64;
         let est_time = est_pages;
         println!(
-            "Current cache: {} 
-            articles. Estimated time to refresh: about {} seconds ({} pages).",
+            "Current cache: {} articles. Estimated time to refresh: about {} seconds ({} pages).",
             prev_cache_count, est_time, est_pages
         );
     }
