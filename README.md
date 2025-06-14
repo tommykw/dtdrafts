@@ -1,6 +1,6 @@
 # dtdrafts
 
-A Rust command-line tool to search and list your unpublished (draft) articles on [@https://dev.to/](https://dev.to/).
+A Rust command-line tool to search and list your unpublished (draft) articles on [dev.to](https://dev.to/).
 
 ## Features
 - Search and list your unpublished (draft) articles from dev.to locally
