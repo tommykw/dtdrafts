@@ -9,9 +9,9 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: stable
       - name: Build binary
@@ -26,11 +26,11 @@ jobs:
         id: sha
         run: echo "sha256=$(shasum -a 256 dist/dtdrafts-macos.tar.gz | awk '{print $1}')" >> $GITHUB_OUTPUT
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           files: dist/dtdrafts-macos.tar.gz
       - name: Update Homebrew Formula
-        uses: mislav/bump-homebrew-formula-action@v2
+        uses: mislav/bump-homebrew-formula-action@v3.4
         with:
           formula-name: dtdrafts
           homebrew-tap: tommykw/homebrew-dtdrafts
