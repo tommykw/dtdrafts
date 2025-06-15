@@ -41,5 +41,6 @@ jobs:
           homebrew-tap: tommykw/homebrew-dtdrafts
           download-url: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/dtdrafts-macos.tar.gz
           download-sha256: ${{ steps.sha.outputs.sha256 }}
+          create-pullrequest: false
         env:
           COMMITTER_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }} 
