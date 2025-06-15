@@ -32,7 +32,7 @@ jobs:
         with:
           files: dist/dtdrafts-macos.tar.gz
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Update Homebrew Formula
         uses: mislav/bump-homebrew-formula-action@v3.4
         with:
