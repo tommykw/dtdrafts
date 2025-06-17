@@ -10,6 +10,13 @@ A Rust command-line tool to search and list your unpublished (draft) articles on
 
 ## Installation
 
+### Using Homebrew (macOS)
+```sh
+brew tap tommykw/dtdrafts
+brew install dtdrafts
+```
+
+### From Source
 1. Clone this repository or download the source code
 2. Install dependencies (see below)
 3. Build the project
@@ -33,29 +40,29 @@ cargo build --release
 First, save your API key:
 
 ```sh
-./target/release/dtdrafts --set-api-key YOUR_API_KEY
+dtdrafts --set-api-key YOUR_API_KEY
 ```
 
 ### 2. Search your draft articles
 
 #### Search by keyword
 ```sh
-./target/release/dtdrafts -q rust
+dtdrafts -q rust
 ```
 
 #### Show all draft articles
 ```sh
-./target/release/dtdrafts --all
+dtdrafts --all
 ```
 
 #### Force refresh the article cache
 ```sh
-./target/release/dtdrafts --refresh -q aws
+dtdrafts --refresh -q aws
 ```
 
 ### 3. Show help
 ```sh
-./target/release/dtdrafts --help
+dtdrafts --help
 ```
 
 ## Config & Cache File Locations
@@ -66,7 +73,7 @@ First, save your API key:
 This file stores your dev.to API key. You can set it using the CLI:
 
 ```sh
-./target/release/dtdrafts --set-api-key YOUR_API_KEY
+dtdrafts --set-api-key YOUR_API_KEY
 ```
 
 Or, you can manually create/edit the file at `~/.dtdrafts/config.json` with the following content:
