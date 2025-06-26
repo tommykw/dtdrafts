@@ -16,13 +16,26 @@ brew tap tommykw/dtdrafts
 brew install dtdrafts
 ```
 
-### From Source
-1. Clone this repository or download the source code
-2. Install dependencies (see below)
-3. Build the project
+### Using Cargo
+```sh
+cargo install dtdrafts
+```
 
+### From Source
+1. Clone this repository:
+```sh
+git clone https://github.com/tommykw/dtdrafts.git
+cd dtdrafts
+```
+
+2. Build the project:
 ```sh
 cargo build --release
+```
+
+3. Install the binary to your PATH (optional):
+```sh
+cargo install --path .
 ```
 
 ## Dependencies
