@@ -16,11 +16,6 @@ brew tap tommykw/dtdrafts
 brew install dtdrafts
 ```
 
-### Using Cargo
-```sh
-cargo install dtdrafts
-```
-
 ### From Source
 1. Clone this repository:
 ```sh
