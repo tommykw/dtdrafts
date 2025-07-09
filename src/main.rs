@@ -6,7 +6,7 @@ use dtdrafts::*;
 #[derive(Parser)]
 #[command(name = "dtdrafts")]
 #[command(about = "Search your dev.to draft articles")]
-#[command(version = "0.1.0")]
+#[command(version = "0.1.3")]
 struct Cli {
     /// Search query
     #[arg(short, long)]
