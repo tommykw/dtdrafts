@@ -48,7 +48,7 @@ impl DevToClient {
         let base_url = "https://dev.to/api";
 
         loop {
-            let url = format!("{}/articles/me/unpublished?page={}&per_page={}", base_url, page, per_page);
+            let url = format!("{base_url}/articles/me/unpublished?page={page}&per_page={per_page}");
             let response = self
                 .client
                 .get(&url)
