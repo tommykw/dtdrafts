@@ -175,7 +175,7 @@ pub fn display_articles(articles: &[&Article]) {
     println!("{} draft article(s) found:\n", articles.len().to_string().green().bold());
     for (i, article) in articles.iter().enumerate() {
         println!("{}. {}", i + 1, article.title.cyan().bold());
-        let edit_url = format!("@https://dev.to/{}/{}/edit", article.user.username, article.slug);
+        let edit_url = format!("https://dev.to/{}/{}/edit", article.user.username, article.slug);
         println!("{}", edit_url.blue().underline());
         println!();
     }
